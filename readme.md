@@ -1,4 +1,4 @@
-Consumer Driven Contracts using Pact:
+**Consumer Driven Contracts using Pact:**
 
 1. **Pact** files are contracts that are created on the Consumer side.
 2. The Pact files are created once Consumer side tests are run successfully.
