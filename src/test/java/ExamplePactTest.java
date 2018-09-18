@@ -6,7 +6,6 @@ import au.com.dius.pact.model.RequestResponsePact;
 
 import org.junit.Rule;
 import org.junit.Test;
-
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,13 +14,14 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PactCreationAndConsumerTest {
+public class ExamplePactTest {
+
     @Rule
     public PactProviderRuleMk2 mockProvider = new PactProviderRuleMk2("test_provider", "localhost", 8080, this);
 
     @Pact(consumer="test_consumer")
     public RequestResponsePact createPact(PactDslWithProvider builder){
-        Map<String,String> headers = new HashMap<String, String >();
+        Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json");
 
         return builder
@@ -37,19 +37,19 @@ public class PactCreationAndConsumerTest {
                     .uponReceiving("POST REQUEST")
                         .method("POST")
                         .headers(headers)
-                        .body("{\"name\": \"Sujeet\"}")
+                        .body("{\"name\": \"Sujeet\", \"country\": \"India\"}")
                         .path("/pact")
                     .willRespondWith()
                         .status(201)
                 .toPact();
-
     }
 
+
     @Test
-    @PactVerification() //used to start the web server for the mock
-    public void givenGet_And_Post_Test() {
+    @PactVerification()
+    public void givenGet_whenSendRequest() {
+
         // when
-        // get test
         ResponseEntity<String> response = new RestTemplate().getForEntity(mockProvider.getUrl() + "/pact", String.class);
 
         // then
@@ -61,7 +61,7 @@ public class PactCreationAndConsumerTest {
         // Post test
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        String jsonBody = "{\"name\": \"Sujeet\"}";
+        String jsonBody = "{\"name\": \"Sujeet\", \"country\": \"India\"}";
 
         // when
         ResponseEntity<String> postResponse = new RestTemplate().exchange(mockProvider.getUrl() + "/pact", HttpMethod.POST, new HttpEntity<String>(jsonBody, httpHeaders), String.class);
@@ -69,4 +69,7 @@ public class PactCreationAndConsumerTest {
         // then
         assertThat(postResponse.getStatusCode().value()).isEqualTo(201);
     }
+
+
+
 }
